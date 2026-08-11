@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="250" height="350" viewBox="0 0 250 350">
+  <defs>
+    <filter id="soft" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+  <rect x="1" y="1" width="248" height="348" rx="16" ry="16" fill="#ffffff" stroke="#d4d4d8" stroke-width="1.5" filter="url(#soft)"/>
+  
+    <g>
+    <text x="24" y="32" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="26" font-weight="700" fill="#0f172a">2</text>
+    <g fill="#0f172a" transform="translate(24,58) scale(0.18)">
+      <path d="M0,-72 C-42,-18 -62,8 -62,32 C-62,52 -46,64 -28,64 C-14,64 -6,56 0,46 C6,56 14,64 28,64 C46,64 62,52 62,32 C62,8 42,-18 0,-72Z"/>
+      <path d="M-10,48 Q0,28 10,48 L6,78 L-6,78Z"/>
+    </g>
+  </g>
+    <g transform="rotate(180 226 318)">
+    <text x="226" y="318" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="26" font-weight="700" fill="#0f172a">2</text>
+    <g fill="#0f172a" transform="translate(226,344) scale(0.18)">
+      <path d="M0,-72 C-42,-18 -62,8 -62,32 C-62,52 -46,64 -28,64 C-14,64 -6,56 0,46 C6,56 14,64 28,64 C46,64 62,52 62,32 C62,8 42,-18 0,-72Z"/>
+      <path d="M-10,48 Q0,28 10,48 L6,78 L-6,78Z"/>
+    </g>
+  </g>
+    <g transform="translate(125,93.72)"><g fill="#0f172a" transform="translate(0,0) scale(0.34)">
+      <path d="M0,-72 C-42,-18 -62,8 -62,32 C-62,52 -46,64 -28,64 C-14,64 -6,56 0,46 C6,56 14,64 28,64 C46,64 62,52 62,32 C62,8 42,-18 0,-72Z"/>
+      <path d="M-10,48 Q0,28 10,48 L6,78 L-6,78Z"/>
+    </g></g>
+<g transform="translate(125,256.28) rotate(180)"><g fill="#0f172a" transform="translate(0,0) scale(0.34)">
+      <path d="M0,-72 C-42,-18 -62,8 -62,32 C-62,52 -46,64 -28,64 C-14,64 -6,56 0,46 C6,56 14,64 28,64 C46,64 62,52 62,32 C62,8 42,-18 0,-72Z"/>
+      <path d="M-10,48 Q0,28 10,48 L6,78 L-6,78Z"/>
+    </g></g>
+  
+</svg>

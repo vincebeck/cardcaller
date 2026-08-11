@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="250" height="350" viewBox="0 0 250 350">
+  <defs>
+    <filter id="soft" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+  <rect x="1" y="1" width="248" height="348" rx="16" ry="16" fill="#ffffff" stroke="#d4d4d8" stroke-width="1.5" filter="url(#soft)"/>
+  
+    <g>
+    <text x="24" y="32" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="26" font-weight="700" fill="#e11d48">5</text>
+    <path fill="#e11d48" transform="translate(24,58) scale(0.18)" d="M0,-22 C-18,-48 -58,-38 -58,-2 C-58,28 -22,52 0,72 C22,52 58,28 58,-2 C58,-38 18,-48 0,-22Z"/>
+  </g>
+    <g transform="rotate(180 226 318)">
+    <text x="226" y="318" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="26" font-weight="700" fill="#e11d48">5</text>
+    <path fill="#e11d48" transform="translate(226,344) scale(0.18)" d="M0,-22 C-18,-48 -58,-38 -58,-2 C-58,28 -22,52 0,72 C22,52 58,28 58,-2 C58,-38 18,-48 0,-22Z"/>
+  </g>
+    <g transform="translate(82.32,93.72)"><path fill="#e11d48" transform="translate(0,0) scale(0.34)" d="M0,-22 C-18,-48 -58,-38 -58,-2 C-58,28 -22,52 0,72 C22,52 58,28 58,-2 C58,-38 18,-48 0,-22Z"/></g>
+<g transform="translate(167.68,93.72)"><path fill="#e11d48" transform="translate(0,0) scale(0.34)" d="M0,-22 C-18,-48 -58,-38 -58,-2 C-58,28 -22,52 0,72 C22,52 58,28 58,-2 C58,-38 18,-48 0,-22Z"/></g>
+<g transform="translate(125,175)"><path fill="#e11d48" transform="translate(0,0) scale(0.34)" d="M0,-22 C-18,-48 -58,-38 -58,-2 C-58,28 -22,52 0,72 C22,52 58,28 58,-2 C58,-38 18,-48 0,-22Z"/></g>
+<g transform="translate(82.32,256.28) rotate(180)"><path fill="#e11d48" transform="translate(0,0) scale(0.34)" d="M0,-22 C-18,-48 -58,-38 -58,-2 C-58,28 -22,52 0,72 C22,52 58,28 58,-2 C58,-38 18,-48 0,-22Z"/></g>
+<g transform="translate(167.68,256.28) rotate(180)"><path fill="#e11d48" transform="translate(0,0) scale(0.34)" d="M0,-22 C-18,-48 -58,-38 -58,-2 C-58,28 -22,52 0,72 C22,52 58,28 58,-2 C58,-38 18,-48 0,-22Z"/></g>
+  
+</svg>

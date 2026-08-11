@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="250" height="350" viewBox="0 0 250 350">
+  <defs>
+    <filter id="soft" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+  <rect x="1" y="1" width="248" height="348" rx="16" ry="16" fill="#ffffff" stroke="#d4d4d8" stroke-width="1.5" filter="url(#soft)"/>
+  
+    <g>
+    <text x="24" y="32" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="26" font-weight="700" fill="#e11d48">K</text>
+    <path fill="#e11d48" transform="translate(24,58) scale(0.18)" d="M0,-72 L48,0 L0,72 L-48,0Z"/>
+  </g>
+    <g transform="rotate(180 226 318)">
+    <text x="226" y="318" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="26" font-weight="700" fill="#e11d48">K</text>
+    <path fill="#e11d48" transform="translate(226,344) scale(0.18)" d="M0,-72 L48,0 L0,72 L-48,0Z"/>
+  </g>
+    
+    <rect x="52" y="64" width="146" height="222" rx="14" fill="#f8fafc" stroke="#e11d48" stroke-width="2.5"/>
+    <rect x="64" y="76" width="122" height="198" rx="10" fill="#ffffff"/>
+  
+      <g transform="translate(125,175)">
+        <path d="M-40,-70 L-24,-108 L0,-84 L24,-108 L40,-70 Z" fill="#e11d48"/>
+        <rect x="-40" y="-70" width="80" height="10" rx="2" fill="#0f172a"/>
+        <circle cx="-24" cy="-108" r="5" fill="#0f172a"/>
+        <circle cx="0" cy="-96" r="5" fill="#e11d48" stroke="#0f172a" stroke-width="2"/>
+        <circle cx="24" cy="-108" r="5" fill="#0f172a"/>
+        <circle cx="0" cy="-28" r="34" fill="#fff" stroke="#0f172a" stroke-width="3"/>
+        <path d="M-14,-36 L-6,-36 M6,-36 L14,-36" stroke="#0f172a" stroke-width="3.5" stroke-linecap="round"/>
+        <path d="M-12,-14 H12" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>
+        <path d="M-48,20 L0,0 L48,20 L48,88 L-48,88 Z" fill="#e11d48"/>
+        <rect x="-6" y="8" width="12" height="56" rx="2" fill="#0f172a"/>
+        <text x="0" y="72" text-anchor="middle" font-family="system-ui,sans-serif" font-size="36" font-weight="800" fill="#fff">K</text>
+      </g>
+    
+  
+</svg>

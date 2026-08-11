@@ -138,10 +138,6 @@
       font-size: 0.75rem;
       line-height: 1.4;
     }
-
-    .credit a {
-      color: #9ec1ff;
-    }
   </style>
 </head>
 <body>
@@ -157,11 +153,7 @@
       <button type="button" class="btn-shuffle" id="shuffleBtn">Shuffle / Reset</button>
     </div>
 
-    <p class="credit">
-      Card art from
-      <a href="https://github.com/htdebeer/SVG-cards" target="_blank" rel="noopener">SVG-cards</a>
-      (LGPL). Not affiliated with Bicycle or USPCC.
-    </p>
+    <p class="credit">Local modern SVG deck — works fully offline.</p>
   </main>
 
   <script>
@@ -195,7 +187,7 @@
     let deck = [];
 
     function cardSrc(suitKey, rankKey) {
-      return `cards/${suitKey}_${rankKey}.png`;
+      return `cards/${suitKey}_${rankKey}.svg`;
     }
 
     function buildDeck() {
@@ -226,7 +218,7 @@
       cardSlot.innerHTML = `
         <img
           class="card placeholder"
-          src="cards/back.png"
+          src="cards/back.svg"
           alt="Card back — click Draw card"
           width="200"
           height="280"

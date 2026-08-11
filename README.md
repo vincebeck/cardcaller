@@ -34,9 +34,10 @@ This is a static site. Deploy the repo root (or at least `index.html` + `audio/`
 
 - **Show card** — display the drawn card face
 - **Speak card** — play a pre-recorded neural voice for that card
-- **Female / Male voice** — voice gender for speech
+- **Voice** — Female or Male
 - **Language** — speech language (English, German, Norwegian)
-- **Draw card** — next card from the remaining deck
+- **Delay** — optional 1–10 second countdown before the card is revealed/spoken
+- **Draw card** or **Space** — draw the next card
 - **Shuffle / Reset** — reshuffle the full deck
 
 ## Audio

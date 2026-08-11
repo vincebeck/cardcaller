@@ -1,19 +1,41 @@
 #!/usr/bin/env python3
-"""Generate neural TTS clips for each card (Piper). Dev/build helper only."""
+"""Generate neural TTS clips for each card / language / voice (Piper)."""
+from __future__ import annotations
+
 from pathlib import Path
 import subprocess
+import urllib.request
 import wave
 
+from piper.config import SynthesisConfig
 from piper.voice import PiperVoice
 
 ROOT = Path(__file__).resolve().parents[1]
-MODEL = ROOT / ".tools" / "en_US-lessac-medium.onnx"
+TOOLS = ROOT / ".tools"
 OUT = ROOT / "audio"
 TMP = ROOT / ".tools" / "wav_tmp"
+HF = "https://huggingface.co/rhasspy/piper-voices/resolve/main"
 
-SUITS = ["hearts", "diamonds", "clubs", "spades"]
+# (lang, gender) -> model files under HF + optional speaker_id
+VOICES = {
+    ("en", "female"): {"rel": "en/en_US/lessac/medium/en_US-lessac-medium", "speaker": None},
+    ("en", "male"): {"rel": "en/en_US/ryan/medium/en_US-ryan-medium", "speaker": None},
+    ("de", "female"): {"rel": "de/de_DE/kerstin/low/de_DE-kerstin-low", "speaker": None},
+    ("de", "male"): {"rel": "de/de_DE/thorsten/medium/de_DE-thorsten-medium", "speaker": None},
+    # Norwegian nvcc: K*=female, M*=male (KSV=1, MSV=5)
+    ("no", "female"): {"rel": "no/no_NO/nvcc/medium/no_NO-nvcc-medium", "speaker": 1},
+    ("no", "male"): {"rel": "no/no_NO/nvcc/medium/no_NO-nvcc-medium", "speaker": 5},
+}
+
+SUIT_KEYS = [
+    ("heart", "hearts"),
+    ("diamond", "diamonds"),
+    ("club", "clubs"),
+    ("spade", "spades"),
+]
+
 RANKS = [
-    ("1", "Ace"),
+    ("1", "ace"),
     ("2", "2"),
     ("3", "3"),
     ("4", "4"),
@@ -23,12 +45,97 @@ RANKS = [
     ("8", "8"),
     ("9", "9"),
     ("10", "10"),
-    ("jack", "Jack"),
-    ("queen", "Queen"),
-    ("king", "King"),
+    ("jack", "jack"),
+    ("queen", "queen"),
+    ("king", "king"),
 ]
 
-SUIT_KEYS = {"hearts": "heart", "diamonds": "diamond", "clubs": "club", "spades": "spade"}
+PHRASES = {
+    "en": {
+        "suit": {
+            "hearts": "hearts",
+            "diamonds": "diamonds",
+            "clubs": "clubs",
+            "spades": "spades",
+        },
+        "rank": {
+            "ace": "Ace",
+            "2": "2",
+            "3": "3",
+            "4": "4",
+            "5": "5",
+            "6": "6",
+            "7": "7",
+            "8": "8",
+            "9": "9",
+            "10": "10",
+            "jack": "Jack",
+            "queen": "Queen",
+            "king": "King",
+        },
+        "fmt": "{rank} of {suit}.",
+    },
+    "de": {
+        "suit": {
+            "hearts": "Herz",
+            "diamonds": "Karo",
+            "clubs": "Kreuz",
+            "spades": "Pik",
+        },
+        "rank": {
+            "ace": "Ass",
+            "2": "Zwei",
+            "3": "Drei",
+            "4": "Vier",
+            "5": "Fünf",
+            "6": "Sechs",
+            "7": "Sieben",
+            "8": "Acht",
+            "9": "Neun",
+            "10": "Zehn",
+            "jack": "Bube",
+            "queen": "Dame",
+            "king": "König",
+        },
+        "fmt": "{suit} {rank}.",
+    },
+    "no": {
+        "suit": {
+            "hearts": "hjerter",
+            "diamonds": "ruter",
+            "clubs": "kløver",
+            "spades": "spar",
+        },
+        "rank": {
+            "ace": "ess",
+            "2": "to",
+            "3": "tre",
+            "4": "fire",
+            "5": "fem",
+            "6": "seks",
+            "7": "sju",
+            "8": "otte",
+            "9": "ni",
+            "10": "ti",
+            "jack": "knekt",
+            "queen": "dame",
+            "king": "konge",
+        },
+        "fmt": "{rank} i {suit}.",
+    },
+}
+
+
+def ensure_model(rel: str) -> Path:
+    stem = Path(rel).name
+    onnx = TOOLS / f"{stem}.onnx"
+    cfg = TOOLS / f"{stem}.onnx.json"
+    if not onnx.exists():
+        print("downloading", rel)
+        urllib.request.urlretrieve(f"{HF}/{rel}.onnx", onnx)
+    if not cfg.exists():
+        urllib.request.urlretrieve(f"{HF}/{rel}.onnx.json", cfg)
+    return onnx
 
 
 def to_mp3(wav: Path, mp3: Path) -> None:
@@ -54,38 +161,47 @@ def to_mp3(wav: Path, mp3: Path) -> None:
     )
 
 
-def to_m4a(wav: Path, m4a: Path) -> None:
-    subprocess.run(
-        ["afconvert", "-f", "m4af", "-d", "aac", "-b", "48000", str(wav), str(m4a)],
-        check=True,
-    )
+def phrase(lang: str, suit_name: str, rank_name: str) -> str:
+    p = PHRASES[lang]
+    return p["fmt"].format(rank=p["rank"][rank_name], suit=p["suit"][suit_name])
 
 
 def main() -> None:
-    if not MODEL.exists():
-        raise SystemExit(f"Missing model: {MODEL}")
-
-    OUT.mkdir(parents=True, exist_ok=True)
+    TOOLS.mkdir(parents=True, exist_ok=True)
     TMP.mkdir(parents=True, exist_ok=True)
+    OUT.mkdir(parents=True, exist_ok=True)
 
-    voice = PiperVoice.load(str(MODEL))
-    use_ffmpeg = subprocess.run(["which", "ffmpeg"], capture_output=True).returncode == 0
+    # Remove legacy flat clips
+    for old in OUT.glob("*.mp3"):
+        old.unlink()
 
-    for suit in SUITS:
-        for rank_key, rank_word in RANKS:
-            text = f"{rank_word} of {suit}."
-            stem = f"{SUIT_KEYS[suit]}_{rank_key}"
-            wav = TMP / f"{stem}.wav"
-            with wave.open(str(wav), "wb") as wf:
-                voice.synthesize_wav(text, wf)
+    cache: dict[str, PiperVoice] = {}
 
-            if use_ffmpeg:
-                out = OUT / f"{stem}.mp3"
+    for (lang, gender), meta in VOICES.items():
+        model_path = ensure_model(meta["rel"])
+        key = str(model_path)
+        if key not in cache:
+            cache[key] = PiperVoice.load(str(model_path))
+        voice = cache[key]
+        syn = (
+            SynthesisConfig(speaker_id=meta["speaker"])
+            if meta["speaker"] is not None
+            else None
+        )
+
+        dest = OUT / lang / gender
+        dest.mkdir(parents=True, exist_ok=True)
+
+        for suit_key, suit_name in SUIT_KEYS:
+            for rank_key, rank_name in RANKS:
+                text = phrase(lang, suit_name, rank_name)
+                stem = f"{suit_key}_{rank_key}"
+                wav = TMP / f"{lang}_{gender}_{stem}.wav"
+                with wave.open(str(wav), "wb") as wf:
+                    voice.synthesize_wav(text, wf, syn_config=syn)
+                out = dest / f"{stem}.mp3"
                 to_mp3(wav, out)
-            else:
-                out = OUT / f"{stem}.m4a"
-                to_m4a(wav, out)
-            print(out.name, out.stat().st_size)
+                print(f"{lang}/{gender}/{out.name}", out.stat().st_size, repr(text))
 
     print("done ->", OUT)
 

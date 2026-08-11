@@ -34,14 +34,22 @@ This is a static site. Deploy the repo root (or at least `index.html` + `audio/`
 
 - **Show card** — display the drawn card face
 - **Speak card** — play a pre-recorded neural voice for that card
+- **Female / Male voice** — voice gender for speech
+- **Language** — speech language (English, German, Norwegian)
 - **Draw card** — next card from the remaining deck
 - **Shuffle / Reset** — reshuffle the full deck
 
 ## Audio
 
-Clips in `audio/` were generated with [Piper](https://github.com/rhasspy/piper) (`en_US-lessac-medium`) and stored as small MP3s (~420 KB total).
+Clips live under `audio/{en|de|no}/{female|male}/` (~2.8 MB total), generated with [Piper](https://github.com/rhasspy/piper):
 
-To regenerate (optional, Mac/Linux with Python + ffmpeg):
+| Language | Female | Male |
+|---|---|---|
+| English | lessac | ryan |
+| German | kerstin | thorsten |
+| Norwegian | nvcc (KSV) | nvcc (MSV) |
+
+To regenerate (optional, with Python + ffmpeg):
 
 ```bash
 python3 scripts/generate-audio.py

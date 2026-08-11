@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Card Caller</title>
+  <style>
+    :root {
+      --bg: #1a2332;
+      --surface: #243044;
+      --text: #f2f4f8;
+      --muted: #9aa8bc;
+      --accent: #3d8bfd;
+      --accent-hover: #5a9dff;
+      --card-bg: #fafafa;
+      --red: #c0392b;
+      --black: #1a1a1a;
+      --shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background:
+        radial-gradient(ellipse at top, #2a3a52 0%, transparent 55%),
+        var(--bg);
+      color: var(--text);
+    }
+
+    .app {
+      width: min(100%, 420px);
+      padding: 2rem 1.5rem;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0 0 0.35rem;
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .subtitle {
+      margin: 0 0 1.75rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .card-slot {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 280px;
+      margin-bottom: 1.5rem;
+    }
+
+    .card {
+      width: 180px;
+      height: 260px;
+      border-radius: 14px;
+      background: var(--card-bg);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 0.85rem 1rem;
+      position: relative;
+      color: var(--black);
+      user-select: none;
+    }
+
+    .card.red {
+      color: var(--red);
+    }
+
+    .card.placeholder {
+      background: var(--surface);
+      border: 2px dashed #3d4f6a;
+      box-shadow: none;
+      color: var(--muted);
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+    }
+
+    .corner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      line-height: 1.05;
+      font-weight: 700;
+    }
+
+    .corner .rank {
+      font-size: 1.35rem;
+    }
+
+    .corner .suit {
+      font-size: 1.1rem;
+    }
+
+    .corner.bottom {
+      align-self: flex-end;
+      transform: rotate(180deg);
+    }
+
+    .center-suit {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4.5rem;
+      pointer-events: none;
+    }
+
+    .status {
+      margin: 0 0 1.25rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+      min-height: 1.4em;
+    }
+
+    .status.empty {
+      color: #f0c674;
+    }
+
+    .actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    button {
+      appearance: none;
+      border: none;
+      border-radius: 10px;
+      padding: 0.75rem 1.35rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease, opacity 0.15s ease, transform 0.1s ease;
+    }
+
+    button:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .btn-draw {
+      background: var(--accent);
+      color: #fff;
+      min-width: 140px;
+    }
+
+    .btn-draw:hover:not(:disabled) {
+      background: var(--accent-hover);
+    }
+
+    .btn-shuffle {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid #4a5d78;
+    }
+
+    .btn-shuffle:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <h1>Card Caller</h1>
+    <p class="subtitle">Draw a random card from a shuffled deck</p>
+
+    <div class="card-slot" id="cardSlot" aria-live="polite"></div>
+    <p class="status" id="status"></p>
+
+    <div class="actions">
+      <button type="button" class="btn-draw" id="drawBtn">Draw card</button>
+      <button type="button" class="btn-shuffle" id="shuffleBtn">Shuffle / Reset</button>
+    </div>
+  </main>
+
+  <script>
+    const SUITS = [
+      { symbol: "♥", name: "hearts", color: "red" },
+      { symbol: "♦", name: "diamonds", color: "red" },
+      { symbol: "♣", name: "clubs", color: "black" },
+      { symbol: "♠", name: "spades", color: "black" },
+    ];
+    const RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+
+    const cardSlot = document.getElementById("cardSlot");
+    const statusEl = document.getElementById("status");
+    const drawBtn = document.getElementById("drawBtn");
+    const shuffleBtn = document.getElementById("shuffleBtn");
+
+    let deck = [];
+
+    function buildDeck() {
+      const cards = [];
+      for (const suit of SUITS) {
+        for (const rank of RANKS) {
+          cards.push({ rank, suit: suit.symbol, color: suit.color, name: suit.name });
+        }
+      }
+      return cards;
+    }
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function renderPlaceholder() {
+      cardSlot.innerHTML = '<div class="card placeholder">Click Draw card</div>';
+    }
+
+    function renderCard(card) {
+      cardSlot.innerHTML = `
+        <div class="card ${card.color}" aria-label="${card.rank} of ${card.name}">
+          <div class="corner">
+            <span class="rank">${card.rank}</span>
+            <span class="suit">${card.suit}</span>
+          </div>
+          <div class="center-suit">${card.suit}</div>
+          <div class="corner bottom">
+            <span class="rank">${card.rank}</span>
+            <span class="suit">${card.suit}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function updateStatus() {
+      const remaining = deck.length;
+      statusEl.classList.toggle("empty", remaining === 0);
+
+      if (remaining === 0) {
+        statusEl.textContent = "Deck empty — shuffle to start again";
+        drawBtn.disabled = true;
+      } else {
+        statusEl.textContent = `${remaining} card${remaining === 1 ? "" : "s"} left`;
+        drawBtn.disabled = false;
+      }
+    }
+
+    function resetDeck() {
+      deck = shuffle(buildDeck());
+      renderPlaceholder();
+      updateStatus();
+    }
+
+    function drawCard() {
+      if (deck.length === 0) return;
+      const card = deck.pop();
+      renderCard(card);
+      updateStatus();
+    }
+
+    drawBtn.addEventListener("click", drawCard);
+    shuffleBtn.addEventListener("click", resetDeck);
+
+    resetDeck();
+  </script>
+</body>
+</html>

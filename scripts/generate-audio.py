@@ -20,11 +20,6 @@ HF = "https://huggingface.co/rhasspy/piper-voices/resolve/main"
 VOICES = {
     ("en", "female"): {"rel": "en/en_US/lessac/medium/en_US-lessac-medium", "speaker": None},
     ("en", "male"): {"rel": "en/en_US/ryan/medium/en_US-ryan-medium", "speaker": None},
-    ("de", "female"): {"rel": "de/de_DE/kerstin/low/de_DE-kerstin-low", "speaker": None},
-    ("de", "male"): {"rel": "de/de_DE/thorsten/medium/de_DE-thorsten-medium", "speaker": None},
-    # Norwegian nvcc: K*=female, M*=male (KSV=1, MSV=5)
-    ("no", "female"): {"rel": "no/no_NO/nvcc/medium/no_NO-nvcc-medium", "speaker": 1},
-    ("no", "male"): {"rel": "no/no_NO/nvcc/medium/no_NO-nvcc-medium", "speaker": 5},
 }
 
 SUIT_KEYS = [
@@ -74,54 +69,6 @@ PHRASES = {
             "king": "King",
         },
         "fmt": "{rank} of {suit}.",
-    },
-    "de": {
-        "suit": {
-            "hearts": "Herz",
-            "diamonds": "Karo",
-            "clubs": "Kreuz",
-            "spades": "Pik",
-        },
-        "rank": {
-            "ace": "Ass",
-            "2": "Zwei",
-            "3": "Drei",
-            "4": "Vier",
-            "5": "Fünf",
-            "6": "Sechs",
-            "7": "Sieben",
-            "8": "Acht",
-            "9": "Neun",
-            "10": "Zehn",
-            "jack": "Bube",
-            "queen": "Dame",
-            "king": "König",
-        },
-        "fmt": "{suit} {rank}.",
-    },
-    "no": {
-        "suit": {
-            "hearts": "hjerter",
-            "diamonds": "ruter",
-            "clubs": "kløver",
-            "spades": "spar",
-        },
-        "rank": {
-            "ace": "ess",
-            "2": "to",
-            "3": "tre",
-            "4": "fire",
-            "5": "fem",
-            "6": "seks",
-            "7": "sju",
-            "8": "otte",
-            "9": "ni",
-            "10": "ti",
-            "jack": "knekt",
-            "queen": "dame",
-            "king": "konge",
-        },
-        "fmt": "{rank} i {suit}.",
     },
 }
 

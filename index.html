@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Card Caller</title>
+<style>
+:root{--bg:#1a2332;--text:#f2f4f8;--muted:#9aa8bc;--accent:#3d8bfd;--red:#d40000;--black:#111}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:system-ui,sans-serif;background:radial-gradient(ellipse at top,#2a3a52,transparent 55%),var(--bg);color:var(--text)}
+.app{width:min(100%,440px);padding:2rem 1.5rem;text-align:center}
+h1{margin:0 0 .35rem;font-size:1.75rem}
+.sub{margin:0 0 1.25rem;color:var(--muted);font-size:.95rem}
+.opts{display:flex;gap:1rem 1.25rem;justify-content:center;flex-wrap:wrap;margin:0 0 1rem;align-items:center}
+.opt{display:inline-flex;align-items:center;gap:.55rem;cursor:pointer;user-select:none;font-size:.95rem;color:var(--text)}
+.opt input{position:absolute;opacity:0;width:0;height:0}
+.sw{width:42px;height:24px;border-radius:999px;background:#3d4f6a;position:relative;transition:background .15s;flex-shrink:0}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .15s}
+.opt input:checked+.sw{background:var(--accent)}
+.opt input:checked+.sw::after{transform:translateX(18px)}
+.opt input:focus-visible+.sw{outline:2px solid #9ec1ff;outline-offset:2px}
+.voice-opts,.timer-opts{display:flex;gap:.75rem 1rem;justify-content:center;flex-wrap:wrap;margin:0 0 1rem;align-items:center}
+.field{display:inline-flex;align-items:center;gap:.45rem;font-size:.9rem;color:var(--muted)}
+.field select{appearance:none;background:#243044;color:var(--text);border:1px solid #4a5d78;border-radius:8px;padding:.45rem .7rem;font-size:.9rem}
+.seg{display:inline-flex;border:1px solid #4a5d78;border-radius:8px;overflow:hidden}
+.seg label{margin:0;cursor:pointer}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg span{display:block;padding:.4rem .85rem;font-size:.9rem;color:var(--muted);background:#243044;transition:background .12s,color .12s}
+.seg label+label span{border-left:1px solid #4a5d78}
+.seg input:checked+span{background:var(--accent);color:#fff}
+.seg input:focus-visible+span{outline:2px solid #9ec1ff;outline-offset:-2px}
+.slot{display:flex;align-items:center;justify-content:center;min-height:320px;margin-bottom:1.5rem}
+.card{width:200px;height:280px;border-radius:12px;background:#fff;border:1px solid #c8c8c8;box-shadow:0 10px 28px rgba(0,0,0,.4);position:relative;color:var(--black);font-family:Times New Roman,Times,serif;user-select:none;overflow:hidden}
+.card.red{color:var(--red)}
+.card.ph{background:#0d2248;border-color:#3d4f6a;color:rgba(255,255,255,.75);display:flex;align-items:center;justify-content:center;font-family:system-ui,sans-serif;font-size:.9rem;box-shadow:none;padding:1rem;flex-direction:column;gap:.35rem}
+.card.ph .cd{font-size:2.4rem;font-weight:700;color:#fff;line-height:1}
+.corner{position:absolute;top:8px;left:8px;display:flex;flex-direction:column;align-items:center;line-height:1;z-index:2;font-weight:700}
+.corner .r{font-size:1.45rem}
+.corner .s{font-size:1.05rem;margin-top:1px}
+.corner.b{top:auto;left:auto;bottom:8px;right:8px;transform:rotate(180deg)}
+.face{position:absolute;inset:36px 28px;display:grid;place-items:center}
+.pips{width:100%;height:100%;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(7,1fr);place-items:center}
+.pip{font-size:1.55rem;line-height:1}
+.pip.u{transform:rotate(180deg)}
+.big{font-size:5.5rem;line-height:1}
+.fc{width:100%;height:100%;border:2px solid currentColor;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.15rem}
+.fl{font-size:2.6rem;font-weight:700;line-height:1}
+.fs{font-size:2rem;line-height:1}
+.status{margin:0 0 1.25rem;color:var(--muted);font-size:.95rem;min-height:1.4em}
+.status.e{color:#f0c674}
+.actions{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;align-items:center}
+button{appearance:none;border:none;border-radius:10px;padding:.75rem 1.35rem;font-size:1rem;font-weight:600;cursor:pointer}
+button:disabled{opacity:.45;cursor:not-allowed}
+.draw{background:var(--accent);color:#fff;min-width:140px}
+.shuf{background:transparent;color:var(--text);border:1px solid #4a5d78}
+.hint{margin:.85rem 0 0;color:var(--muted);font-size:.85rem}
+.hint kbd{display:inline-block;padding:.1rem .4rem;border:1px solid #4a5d78;border-bottom-width:2px;border-radius:5px;background:#243044;color:var(--text);font:600 .8rem system-ui,sans-serif}
+</style>
+</head>
+<body>
+<main class="app">
+<h1>Card Caller</h1>
+<p class="sub">Draw a random card from a shuffled deck</p>
+<div class="opts">
+<label class="opt"><input type="checkbox" id="showOpt" checked/><span class="sw" aria-hidden="true"></span>Show card</label>
+<label class="opt"><input type="checkbox" id="speakOpt"/><span class="sw" aria-hidden="true"></span>Speak card</label>
+</div>
+<div class="voice-opts" id="voiceOpts">
+<div class="field">Voice
+<div class="seg" role="radiogroup" aria-label="Voice">
+<label><input type="radio" name="voice" value="female" checked/><span>Female</span></label>
+<label><input type="radio" name="voice" value="male"/><span>Male</span></label>
+</div>
+</div>
+<label class="field">Language
+<select id="langOpt" aria-label="Speech language">
+<option value="en">English</option>
+</select>
+</label>
+</div>
+<div class="timer-opts">
+<label class="opt"><input type="checkbox" id="timerOpt"/><span class="sw" aria-hidden="true"></span>Delay</label>
+<label class="field" id="delayField">Seconds
+<select id="delayOpt" aria-label="Delay in seconds" disabled>
+<option value="1">1</option>
+<option value="2">2</option>
+<option value="3" selected>3</option>
+<option value="4">4</option>
+<option value="5">5</option>
+<option value="6">6</option>
+<option value="7">7</option>
+<option value="8">8</option>
+<option value="9">9</option>
+<option value="10">10</option>
+</select>
+</label>
+</div>
+<div class="slot" id="slot" aria-live="polite"></div>
+<p class="status" id="status"></p>
+<div class="actions">
+<button type="button" class="draw" id="draw">Draw card</button>
+<button type="button" class="shuf" id="shuf">Shuffle / Reset</button>
+</div>
+<p class="hint">Press <kbd>Space</kbd> to draw</p>
+</main>
+<script>
+const SUITS=[{s:"♥",n:"hearts",c:"red",k:"heart"},{s:"♦",n:"diamonds",c:"red",k:"diamond"},{s:"♣",n:"clubs",c:"black",k:"club"},{s:"♠",n:"spades",c:"black",k:"spade"}];
+const RANKS=["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
+const RANK_KEYS={A:"1",J:"jack",Q:"queen",K:"king"};
+const RANK_WORDS={A:"Ace",J:"Jack",Q:"Queen",K:"King"};
+const PIPS={A:["2,4"],2:["2,1","~2,7"],3:["2,1","2,4","~2,7"],4:["1,1","3,1","~1,7","~3,7"],5:["1,1","3,1","2,4","~1,7","~3,7"],6:["1,1","3,1","1,4","3,4","~1,7","~3,7"],7:["1,1","3,1","2,3","1,4","3,4","~1,7","~3,7"],8:["1,1","3,1","2,3","1,4","3,4","~2,5","~1,7","~3,7"],9:["1,1","3,1","1,3","3,3","2,4","~1,5","~3,5","~1,7","~3,7"],10:["1,1","3,1","2,2","1,3","3,3","~1,5","~3,5","~2,6","~1,7","~3,7"]};
+const slot=document.getElementById("slot"),st=document.getElementById("status");
+const drawBtn=document.getElementById("draw"),shufBtn=document.getElementById("shuf");
+const showOpt=document.getElementById("showOpt"),speakOpt=document.getElementById("speakOpt");
+const langOpt=document.getElementById("langOpt"),voiceOpts=document.getElementById("voiceOpts");
+const timerOpt=document.getElementById("timerOpt"),delayOpt=document.getElementById("delayOpt");
+let deck=[],lastCard=null,player=null,pending=null,countdown=null;
+
+function gender(){const el=document.querySelector('input[name="voice"]:checked');return el?el.value:"female"}
+function lang(){return langOpt.value||"en"}
+function delaySec(){return Math.min(10,Math.max(1,Number(delayOpt.value)||3))}
+function syncVoiceOpts(){voiceOpts.style.opacity=speakOpt.checked?"1":".45";voiceOpts.style.pointerEvents=speakOpt.checked?"auto":"none"}
+function syncDelayField(){delayOpt.disabled=!timerOpt.checked}
+
+function build(){const a=[];for(const u of SUITS)for(const r of RANKS)a.push({r,s:u.s,c:u.c,n:u.n,sk:u.k,rk:RANK_KEYS[r]||r});return a}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function corners(card){return`<div class="corner"><span class="r">${card.r}</span><span class="s">${card.s}</span></div><div class="corner b"><span class="r">${card.r}</span><span class="s">${card.s}</span></div>`}
+function face(card){
+  if(card.r==="A")return`<div class="face"><span class="big">${card.s}</span></div>`;
+  if("JQK".includes(card.r))return`<div class="face"><div class="fc"><span class="fl">${card.r}</span><span class="fs">${card.s}</span></div></div>`;
+  return`<div class="face"><div class="pips">${(PIPS[card.r]||[]).map(p=>{const u=p[0]==="~";const[col,row]=p.replace("~","").split(",");return`<span class="pip${u?" u":""}" style="grid-column:${col};grid-row:${row}">${card.s}</span>`}).join("")}</div></div>`;
+}
+function cardName(card){return`${RANK_WORDS[card.r]||card.r} of ${card.n}`}
+function audioSrc(card){return`audio/${lang()}/${gender()}/${card.sk}_${card.rk}.mp3`}
+function stopSpeak(){if(player){player.pause();player.currentTime=0;player=null}}
+function clearPending(){
+  if(pending){clearTimeout(pending);pending=null}
+  if(countdown){clearInterval(countdown);countdown=null}
+}
+function speak(card){
+  stopSpeak();
+  player=new Audio(audioSrc(card));
+  player.play().catch(()=>{st.textContent="Could not play card audio"});
+}
+function showPh(msg,secs){
+  slot.innerHTML=secs!=null
+    ?`<div class="card ph"><span class="cd">${secs}</span><span>${msg}</span></div>`
+    :`<div class="card ph">${msg}</div>`;
+}
+function showCard(card){slot.innerHTML=`<div class="card ${card.c}" aria-label="${cardName(card)}">${corners(card)}${face(card)}</div>`}
+function renderDrawn(card){
+  if(showOpt.checked)showCard(card);
+  else showPh(speakOpt.checked?"Card called":"Card drawn");
+  if(speakOpt.checked)speak(card);
+}
+function update(){
+  const n=deck.length;
+  const busy=!!pending;
+  st.classList.toggle("e",!n);
+  if(!busy)st.textContent=n?`${n} card${n===1?"":"s"} left`:"Deck empty — shuffle to start again";
+  drawBtn.disabled=!n||busy;
+}
+function reset(){
+  clearPending();
+  stopSpeak();
+  deck=shuffle(build());
+  lastCard=null;
+  showPh("Click Draw card or press Space");
+  update();
+}
+function reveal(){
+  pending=null;
+  if(countdown){clearInterval(countdown);countdown=null}
+  if(!deck.length){update();return}
+  lastCard=deck.pop();
+  renderDrawn(lastCard);
+  update();
+}
+function requestDraw(){
+  if(!deck.length||pending)return;
+  if(!timerOpt.checked){reveal();return}
+  let left=delaySec();
+  showPh("Drawing in…",left);
+  st.textContent=`Drawing in ${left}…`;
+  drawBtn.disabled=true;
+  countdown=setInterval(()=>{
+    left-=1;
+    if(left<=0)return;
+    showPh("Drawing in…",left);
+    st.textContent=`Drawing in ${left}…`;
+  },1000);
+  pending=setTimeout(reveal,left*1000);
+}
+showOpt.onchange=()=>{
+  if(pending)return;
+  if(lastCard){if(showOpt.checked)showCard(lastCard);else showPh(speakOpt.checked?"Card called":"Card drawn")}
+};
+speakOpt.onchange=()=>{if(!speakOpt.checked)stopSpeak();syncVoiceOpts()};
+document.querySelectorAll('input[name="voice"]').forEach(el=>{
+  el.onchange=()=>{if(speakOpt.checked&&lastCard&&!pending)speak(lastCard)};
+});
+langOpt.onchange=()=>{if(speakOpt.checked&&lastCard&&!pending)speak(lastCard)};
+timerOpt.onchange=syncDelayField;
+drawBtn.onclick=requestDraw;
+shufBtn.onclick=reset;
+window.addEventListener("keydown",e=>{
+  if(e.code!=="Space"&&e.key!==" ")return;
+  const t=e.target;
+  if(t&&(t.tagName==="INPUT"||t.tagName==="SELECT"||t.tagName==="TEXTAREA"||t.isContentEditable))return;
+  e.preventDefault();
+  requestDraw();
+});
+syncVoiceOpts();
+syncDelayField();
+reset();
+</script>
+</body>
+</html>

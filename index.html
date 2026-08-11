@@ -1,273 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Card Caller</title>
-  <style>
-    :root {
-      --bg: #1a2332;
-      --text: #f2f4f8;
-      --muted: #9aa8bc;
-      --accent: #3d8bfd;
-      --accent-hover: #5a9dff;
-      --shadow: 0 10px 28px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.25);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: "Segoe UI", system-ui, sans-serif;
-      background:
-        radial-gradient(ellipse at top, #2a3a52 0%, transparent 55%),
-        var(--bg);
-      color: var(--text);
-    }
-
-    .app {
-      width: min(100%, 420px);
-      padding: 2rem 1.5rem;
-      text-align: center;
-    }
-
-    h1 {
-      margin: 0 0 0.35rem;
-      font-size: 1.75rem;
-      font-weight: 700;
-      letter-spacing: 0.02em;
-    }
-
-    .subtitle {
-      margin: 0 0 1.75rem;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-
-    .card-slot {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 320px;
-      margin-bottom: 1.5rem;
-    }
-
-    .card {
-      width: 200px;
-      height: auto;
-      border-radius: 10px;
-      box-shadow: var(--shadow);
-      display: block;
-      user-select: none;
-      background: #fff;
-    }
-
-    .card.placeholder {
-      height: 280px;
-      object-fit: cover;
-      background: #0d2248;
-    }
-
-    .status {
-      margin: 0 0 1.25rem;
-      color: var(--muted);
-      font-size: 0.95rem;
-      min-height: 1.4em;
-    }
-
-    .status.empty {
-      color: #f0c674;
-    }
-
-    .actions {
-      display: flex;
-      gap: 0.75rem;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    button {
-      appearance: none;
-      border: none;
-      border-radius: 10px;
-      padding: 0.75rem 1.35rem;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.15s ease, opacity 0.15s ease, transform 0.1s ease;
-    }
-
-    button:active:not(:disabled) {
-      transform: translateY(1px);
-    }
-
-    button:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
-    }
-
-    .btn-draw {
-      background: var(--accent);
-      color: #fff;
-      min-width: 140px;
-    }
-
-    .btn-draw:hover:not(:disabled) {
-      background: var(--accent-hover);
-    }
-
-    .btn-shuffle {
-      background: transparent;
-      color: var(--text);
-      border: 1px solid #4a5d78;
-    }
-
-    .btn-shuffle:hover {
-      background: rgba(255, 255, 255, 0.06);
-    }
-
-    .credit {
-      margin-top: 1.75rem;
-      color: var(--muted);
-      font-size: 0.75rem;
-      line-height: 1.4;
-    }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Card Caller</title>
+<style>
+:root{--bg:#1a2332;--text:#f2f4f8;--muted:#9aa8bc;--accent:#3d8bfd;--red:#d40000;--black:#111}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:system-ui,sans-serif;background:radial-gradient(ellipse at top,#2a3a52,transparent 55%),var(--bg);color:var(--text)}
+.app{width:min(100%,420px);padding:2rem 1.5rem;text-align:center}
+h1{margin:0 0 .35rem;font-size:1.75rem}
+.sub{margin:0 0 1.75rem;color:var(--muted);font-size:.95rem}
+.slot{display:flex;align-items:center;justify-content:center;min-height:320px;margin-bottom:1.5rem}
+.card{width:200px;height:280px;border-radius:12px;background:#fff;border:1px solid #c8c8c8;box-shadow:0 10px 28px rgba(0,0,0,.4);position:relative;color:var(--black);font-family:Times New Roman,Times,serif;user-select:none;overflow:hidden}
+.card.red{color:var(--red)}
+.card.ph{background:#0d2248;border-color:#3d4f6a;color:rgba(255,255,255,.75);display:flex;align-items:center;justify-content:center;font-family:system-ui,sans-serif;font-size:.9rem;box-shadow:none}
+.corner{position:absolute;top:8px;left:8px;display:flex;flex-direction:column;align-items:center;line-height:1;z-index:2;font-weight:700}
+.corner .r{font-size:1.45rem}
+.corner .s{font-size:1.05rem;margin-top:1px}
+.corner.b{top:auto;left:auto;bottom:8px;right:8px;transform:rotate(180deg)}
+.face{position:absolute;inset:36px 28px;display:grid;place-items:center}
+.pips{width:100%;height:100%;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(7,1fr);place-items:center}
+.pip{font-size:1.55rem;line-height:1}
+.pip.u{transform:rotate(180deg)}
+.big{font-size:5.5rem;line-height:1}
+.fc{width:100%;height:100%;border:2px solid currentColor;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.15rem}
+.fl{font-size:2.6rem;font-weight:700;line-height:1}
+.fs{font-size:2rem;line-height:1}
+.status{margin:0 0 1.25rem;color:var(--muted);font-size:.95rem;min-height:1.4em}
+.status.e{color:#f0c674}
+.actions{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+button{appearance:none;border:none;border-radius:10px;padding:.75rem 1.35rem;font-size:1rem;font-weight:600;cursor:pointer}
+button:disabled{opacity:.45;cursor:not-allowed}
+.draw{background:var(--accent);color:#fff;min-width:140px}
+.shuf{background:transparent;color:var(--text);border:1px solid #4a5d78}
+</style>
 </head>
 <body>
-  <main class="app">
-    <h1>Card Caller</h1>
-    <p class="subtitle">Draw a random card from a shuffled deck</p>
-
-    <div class="card-slot" id="cardSlot" aria-live="polite"></div>
-    <p class="status" id="status"></p>
-
-    <div class="actions">
-      <button type="button" class="btn-draw" id="drawBtn">Draw card</button>
-      <button type="button" class="btn-shuffle" id="shuffleBtn">Shuffle / Reset</button>
-    </div>
-
-    <p class="credit">Local modern SVG deck — works fully offline.</p>
-  </main>
-
-  <script>
-    const SUITS = [
-      { key: "heart", name: "hearts" },
-      { key: "diamond", name: "diamonds" },
-      { key: "club", name: "clubs" },
-      { key: "spade", name: "spades" },
-    ];
-    const RANKS = [
-      { key: "1", label: "A" },
-      { key: "2", label: "2" },
-      { key: "3", label: "3" },
-      { key: "4", label: "4" },
-      { key: "5", label: "5" },
-      { key: "6", label: "6" },
-      { key: "7", label: "7" },
-      { key: "8", label: "8" },
-      { key: "9", label: "9" },
-      { key: "10", label: "10" },
-      { key: "jack", label: "J" },
-      { key: "queen", label: "Q" },
-      { key: "king", label: "K" },
-    ];
-
-    const cardSlot = document.getElementById("cardSlot");
-    const statusEl = document.getElementById("status");
-    const drawBtn = document.getElementById("drawBtn");
-    const shuffleBtn = document.getElementById("shuffleBtn");
-
-    let deck = [];
-
-    function cardSrc(suitKey, rankKey) {
-      return `cards/${suitKey}_${rankKey}.svg`;
-    }
-
-    function buildDeck() {
-      const cards = [];
-      for (const suit of SUITS) {
-        for (const rank of RANKS) {
-          cards.push({
-            suitKey: suit.key,
-            suitName: suit.name,
-            rankKey: rank.key,
-            rankLabel: rank.label,
-            src: cardSrc(suit.key, rank.key),
-          });
-        }
-      }
-      return cards;
-    }
-
-    function shuffle(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-      return array;
-    }
-
-    function renderPlaceholder() {
-      cardSlot.innerHTML = `
-        <img
-          class="card placeholder"
-          src="cards/back.svg"
-          alt="Card back — click Draw card"
-          width="200"
-          height="280"
-        />
-      `;
-    }
-
-    function renderCard(card) {
-      cardSlot.innerHTML = `
-        <img
-          class="card"
-          src="${card.src}"
-          alt="${card.rankLabel} of ${card.suitName}"
-          width="200"
-          height="280"
-        />
-      `;
-    }
-
-    function updateStatus() {
-      const remaining = deck.length;
-      statusEl.classList.toggle("empty", remaining === 0);
-
-      if (remaining === 0) {
-        statusEl.textContent = "Deck empty — shuffle to start again";
-        drawBtn.disabled = true;
-      } else {
-        statusEl.textContent = `${remaining} card${remaining === 1 ? "" : "s"} left`;
-        drawBtn.disabled = false;
-      }
-    }
-
-    function resetDeck() {
-      deck = shuffle(buildDeck());
-      renderPlaceholder();
-      updateStatus();
-    }
-
-    function drawCard() {
-      if (deck.length === 0) return;
-      const card = deck.pop();
-      renderCard(card);
-      updateStatus();
-    }
-
-    drawBtn.addEventListener("click", drawCard);
-    shuffleBtn.addEventListener("click", resetDeck);
-
-    resetDeck();
-  </script>
+<main class="app">
+<h1>Card Caller</h1>
+<p class="sub">Draw a random card from a shuffled deck</p>
+<div class="slot" id="slot" aria-live="polite"></div>
+<p class="status" id="status"></p>
+<div class="actions">
+<button type="button" class="draw" id="draw">Draw card</button>
+<button type="button" class="shuf" id="shuf">Shuffle / Reset</button>
+</div>
+</main>
+<script>
+const SUITS=[{s:"♥",n:"hearts",c:"red"},{s:"♦",n:"diamonds",c:"red"},{s:"♣",n:"clubs",c:"black"},{s:"♠",n:"spades",c:"black"}];
+const RANKS=["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
+const PIPS={A:["2,4"],2:["2,1","~2,7"],3:["2,1","2,4","~2,7"],4:["1,1","3,1","~1,7","~3,7"],5:["1,1","3,1","2,4","~1,7","~3,7"],6:["1,1","3,1","1,4","3,4","~1,7","~3,7"],7:["1,1","3,1","2,3","1,4","3,4","~1,7","~3,7"],8:["1,1","3,1","2,3","1,4","3,4","~2,5","~1,7","~3,7"],9:["1,1","3,1","1,3","3,3","2,4","~1,5","~3,5","~1,7","~3,7"],10:["1,1","3,1","2,2","1,3","3,3","~1,5","~3,5","~2,6","~1,7","~3,7"]};
+const slot=document.getElementById("slot"),st=document.getElementById("status"),drawBtn=document.getElementById("draw"),shufBtn=document.getElementById("shuf");
+let deck=[];
+function build(){const a=[];for(const u of SUITS)for(const r of RANKS)a.push({r,s:u.s,c:u.c,n:u.n});return a}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function corners(card){return`<div class="corner"><span class="r">${card.r}</span><span class="s">${card.s}</span></div><div class="corner b"><span class="r">${card.r}</span><span class="s">${card.s}</span></div>`}
+function face(card){
+  if(card.r==="A")return`<div class="face"><span class="big">${card.s}</span></div>`;
+  if("JQK".includes(card.r))return`<div class="face"><div class="fc"><span class="fl">${card.r}</span><span class="fs">${card.s}</span></div></div>`;
+  return`<div class="face"><div class="pips">${(PIPS[card.r]||[]).map(p=>{const u=p[0]==="~";const[col,row]=p.replace("~","").split(",");return`<span class="pip${u?" u":""}" style="grid-column:${col};grid-row:${row}">${card.s}</span>`}).join("")}</div></div>`;
+}
+function showPh(){slot.innerHTML=`<div class="card ph">Click Draw card</div>`}
+function show(card){slot.innerHTML=`<div class="card ${card.c}" aria-label="${card.r} of ${card.n}">${corners(card)}${face(card)}</div>`}
+function update(){const n=deck.length;st.classList.toggle("e",!n);st.textContent=n?`${n} card${n===1?"":"s"} left`:"Deck empty — shuffle to start again";drawBtn.disabled=!n}
+function reset(){deck=shuffle(build());showPh();update()}
+drawBtn.onclick=()=>{if(!deck.length)return;show(deck.pop());update()};
+shufBtn.onclick=reset;
+reset();
+</script>
 </body>
 </html>

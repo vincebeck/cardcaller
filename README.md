@@ -36,6 +36,7 @@ This is a static site. Deploy the repo root (or at least `index.html` + `audio/`
 - **Speak card** — play a pre-recorded neural voice for that card
 - **Voice** — Female or Male
 - **Language** — speech language (English for now; more later)
+- **Volume** — speech volume
 - **Delay** — optional 1–10 second countdown before the card is revealed/spoken
 - **Draw card** or **Space** — draw the next card
 - **Shuffle / Reset** — reshuffle the full deck
